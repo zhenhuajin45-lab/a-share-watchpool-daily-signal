@@ -406,8 +406,9 @@ def _author_view(reference: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def _external_view(external: dict[str, Any]) -> dict[str, Any]:
+def _external_view(external: dict[str, Any], execution_trade_date: str | None) -> dict[str, Any]:
     gate = external.get("external_tech_shock") if isinstance(external.get("external_tech_shock"), dict) else {}
+    external_trade_date = _valid_trade_date(external.get("trade_date"))
     return {
         "status": external.get("status") or "UNAVAILABLE",
         "source_quality": external.get("source_quality") or "UNAVAILABLE",
@@ -417,7 +418,11 @@ def _external_view(external: dict[str, Any]) -> dict[str, Any]:
         "position_cap_pct": number(gate.get("position_cap_pct"), number(external.get("position_cap_pct"))),
         "reasons": gate.get("reasons") or external.get("reasons") or [],
         "markets": external.get("markets") or external.get("quotes") or [],
-        "fresh_for_execution": external.get("fresh_for_execution") is True,
+        "fresh_for_execution": (
+            external.get("fresh_for_execution") is True
+            and external_trade_date is not None
+            and external_trade_date == execution_trade_date
+        ),
     }
 
 
@@ -482,6 +487,8 @@ def _sector_rotation(sector_cycle: dict[str, Any], topics: dict[str, Any], limit
 def build_premarket_command(payload: dict[str, Any]) -> dict[str, Any]:
     """Build the transferable premarket command contract."""
 
+    source_trade_date = _valid_trade_date(payload.get("source_trade_date"))
+    execution_trade_date = _valid_trade_date(payload.get("execution_trade_date"))
     sentiment = payload.get("market_sentiment") if isinstance(payload.get("market_sentiment"), dict) else {}
     raw_indices = payload.get("major_indices") if isinstance(payload.get("major_indices"), list) else []
     indices: list[dict[str, Any]] = []
@@ -494,7 +501,10 @@ def build_premarket_command(payload: dict[str, Any]) -> dict[str, Any]:
             indices.append(dict(item))
     sector_cycle = payload.get("sector_cycle") if isinstance(payload.get("sector_cycle"), dict) else {}
     author = _author_view(payload.get("author_ratio") if isinstance(payload.get("author_ratio"), dict) else {})
-    external = _external_view(payload.get("external_market") if isinstance(payload.get("external_market"), dict) else {})
+    external = _external_view(
+        payload.get("external_market") if isinstance(payload.get("external_market"), dict) else {},
+        execution_trade_date,
+    )
     topics = payload.get("topic_context") if isinstance(payload.get("topic_context"), dict) else {}
     cross_evidence = payload.get("cross_evidence") if isinstance(payload.get("cross_evidence"), dict) else {}
     operational_acceptance = payload.get("operational_acceptance") if isinstance(payload.get("operational_acceptance"), dict) else {"release_gate": "NOT_MET"}
@@ -532,11 +542,8 @@ def build_premarket_command(payload: dict[str, Any]) -> dict[str, Any]:
         if author_ceiling is not None:
             expansion_cap = min(expansion_cap, int(author_ceiling))
 
-    source_trade_date = _valid_trade_date(payload.get("source_trade_date"))
-    execution_trade_date = _valid_trade_date(payload.get("execution_trade_date"))
     sentiment_date = _valid_trade_date(sentiment.get("trade_date"))
     sector_date = _valid_trade_date(sector_cycle.get("trade_date"))
-    external_date = _valid_trade_date((payload.get("external_market") or {}).get("trade_date")) if isinstance(payload.get("external_market"), dict) else None
     author_observations = payload.get("author_ratio", {}).get("observations", []) if isinstance(payload.get("author_ratio"), dict) else []
     author_dates = [
         _valid_trade_date(item.get("trade_date"))
@@ -556,7 +563,7 @@ def build_premarket_command(payload: dict[str, Any]) -> dict[str, Any]:
         "major_indices_date": dated_index_count >= 3,
         "author_ratio_date": latest_author_date == source_trade_date,
         "sector_cycle_date": sector_date == source_trade_date,
-        "external_market_date": external_date == execution_trade_date,
+        "external_market_date": external.get("fresh_for_execution") is True,
     }
     sentiment_is_gm = str(sentiment.get("source") or "").upper().startswith("GM_")
     sector_is_gm = str(sector_cycle.get("source") or "").upper().startswith("GM_")
@@ -568,7 +575,6 @@ def build_premarket_command(payload: dict[str, Any]) -> dict[str, Any]:
             str(external.get("status") or "").upper() in {"OK", "READY"}
             and str(external.get("source_quality") or "").lower() in {"verified_live", "two_source_verified", "cross_checked"}
             and external.get("level") not in {"UNKNOWN", "UNAVAILABLE", ""}
-            and external.get("fresh_for_execution") is True
         ),
         "sector_cycle": str(sector_cycle.get("status") or "").upper() in {"OK", "READY"} and bool(sector_cycle.get("sectors")) and sector_is_gm,
     }

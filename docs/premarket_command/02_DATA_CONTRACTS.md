@@ -60,6 +60,8 @@
 
 可接受核验状态：`ARTICLE_TEXT_VERIFIED`、`ARTICLE_IMAGE_VERIFIED`、`CROSS_SOURCE_VERIFIED`、`USER_CONFIRMED`。
 
+同一文章同时明确给出“今日”和“上个交易日”数值时，可用 `observations[]` 一次写入两日；每一项仍需独立 `trade_date/ratio/verification`。`article_date` 必须等于任务交易日，`observations[]` 必须包含该日。`ARTICLE_IMAGE_VERIFIED` 必须提供 `evidence_files[]`，本地原图 SHA-256 与全部账本冲突必须在首笔入账前复核通过。
+
 采集尝试状态：`NOT_FOUND`、`ARTICLE_FOUND_RATIO_MISSING`、`OCR_AMBIGUOUS`、`AUTHOR_DID_NOT_PUBLISH`、`NON_TRADING_DAY`、`SOURCE_UNAVAILABLE`。这些状态不能进入数值序列。
 
 ## 5. `external_market`

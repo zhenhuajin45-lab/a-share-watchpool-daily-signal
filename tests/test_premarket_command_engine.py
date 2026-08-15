@@ -71,6 +71,27 @@ class PremarketEngineTests(unittest.TestCase):
         self.assertEqual(reviewed["release_status"], "REVIEW_PENDING")
         self.assertFalse(reviewed["publication_gate"]["source_publishable"])
 
+    def test_external_freshness_must_match_execution_date(self) -> None:
+        payload = json.loads(json.dumps(self.sample))
+        payload["external_market"].update({
+            "trade_date": "20260815",
+            "fresh_for_execution": True,
+        })
+        command = build_premarket_command(payload)
+        self.assertFalse(command["external_resonance"]["fresh_for_execution"])
+        self.assertNotIn("external_market", command["source_health"]["missing"])
+        self.assertIn("external_market_date", command["source_health"]["stale_or_undated"])
+
+    def test_external_freshness_accepts_execution_day_capture(self) -> None:
+        payload = json.loads(json.dumps(self.sample))
+        payload["external_market"].update({
+            "trade_date": payload["execution_trade_date"],
+            "fresh_for_execution": True,
+        })
+        command = build_premarket_command(payload)
+        self.assertTrue(command["external_resonance"]["fresh_for_execution"])
+        self.assertTrue(command["source_health"]["freshness"]["external_market_date"])
+
     def test_ambiguous_author_ocr_never_enters_ratio_sequence(self) -> None:
         payload = json.loads(json.dumps(self.sample))
         payload["author_ratio"]["observations"] = [{"trade_date": "20260814", "ratio": 9.99, "verification": "OCR_AMBIGUOUS"}]
