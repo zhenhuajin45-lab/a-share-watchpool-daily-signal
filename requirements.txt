@@ -1,0 +1,6 @@
+# Local validation baseline captured on 2026-08-15.
+# Compare with the original server before deployment; do not upgrade production implicitly.
+numpy==2.3.2
+pandas==2.3.3
+gm==3.0.183
+pytest==9.1.1
