@@ -26,6 +26,7 @@ scripts/validate_repository.ps1  本地统一验证入口
 scripts/Invoke-PremarketCommand.ps1  Windows 盘前采集/标准化/复核一键入口
 docs/premarket_command/07_OTHER_ENVIRONMENT_HANDOVER.md  跨环境补丁部署、验证、回滚和下一交易日交接
 docs/premarket_command/08_NEXT_TRADING_DAY_CHECKLIST.md  2026-08-17 操作员逐项勾选表
+docs/premarket_command/09_CODEX_REMOTE_DEPLOYMENT_PROMPT.md  可直接交给目标服务器 Codex 的部署指引
 ```
 
 ## 本地验证

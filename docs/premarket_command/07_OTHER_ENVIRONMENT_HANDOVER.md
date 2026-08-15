@@ -14,6 +14,7 @@
 
 - GitHub 分支：`agent/premarket-command`
 - Draft PR：`https://github.com/zhenhuajin45-lab/a-share-watchpool-daily-signal/pull/2`
+- 目标服务器 Codex 指引：`docs/premarket_command/09_CODEX_REMOTE_DEPLOYMENT_PROMPT.md`
 - 兼容基线：`main` 的 `46cc10f`（`Merge pull request #1 ... repository-baseline`）
 - 代码补丁提交顺序：
   1. `bacbd5e` `feat: add guarded premarket command layer`

@@ -27,6 +27,7 @@ REQUIRED = [
     "docs/premarket_command/06_SOURCE_MAP.md",
     "docs/premarket_command/07_OTHER_ENVIRONMENT_HANDOVER.md",
     "docs/premarket_command/08_NEXT_TRADING_DAY_CHECKLIST.md",
+    "docs/premarket_command/09_CODEX_REMOTE_DEPLOYMENT_PROMPT.md",
     "docs/premarket_command/CODEX_HANDOFF_PROMPT.md",
     "examples/premarket_input.sample.json",
 ]
