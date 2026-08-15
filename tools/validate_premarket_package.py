@@ -17,6 +17,8 @@ REQUIRED = [
     "adapters/gm_market_data_adapter.py",
     "adapters/kaipanla_windows_uia_capture.py",
     "adapters/author_ratio_ledger.py",
+    "tools/evaluate_premarket_release_gate.py",
+    "tools/record_premarket_acceptance.py",
     "docs/premarket_command/01_LOGIC_SPEC.md",
     "docs/premarket_command/02_DATA_CONTRACTS.md",
     "docs/premarket_command/03_WINDOWS_DEPLOYMENT.md",

@@ -83,6 +83,19 @@ python tools\validate_premarket_package.py
 - 再运行 5 个交易日模拟盘：确认仓位上限和方向白名单只收紧权限。
 - 检查每个策略对 `REVIEW_PENDING`、过期合同和日期不匹配的拒绝行为。
 
+每个交易日先保存合同、健康报告、09:20 快照或模拟盘日志，再用 `tools/record_premarket_acceptance.py` 生成带 SHA-256 的阶段证据。脚本要求显式列出该阶段全部检查；影子和模拟盘还必须传 `--confirm-no-real-orders`。例如影子阶段：
+
+```powershell
+python tools\record_premarket_acceptance.py --stage shadow --execution-date 20260817 `
+  --check completed --check read_only --check orders_unchanged `
+  --check stale_contract_rejected --check date_mismatch_rejected --check review_pending_rejected `
+  --evidence-file reports\premarket_command\premarket_command.20260817.reviewed.json `
+  --evidence-file reports\premarket_command\gm_opening.20260817.json `
+  --confirm-no-real-orders --output data\acceptance\shadow\20260817.json
+```
+
+记录后运行 `tools/evaluate_premarket_release_gate.py`；无效文件不会计数，并会列入 `evidence_quality.invalid_evidence`。
+
 ## 6. 发布门槛
 
 只有同时满足以下条件才允许多个策略正式消费：
