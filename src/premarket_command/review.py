@@ -5,6 +5,8 @@ from __future__ import annotations
 import json
 from typing import Any
 
+from .acceptance import operational_release_gate_met
+
 
 def build_deepseek_prompt(command: dict[str, Any]) -> str:
     return """你是A股多策略盘前指挥台的反方质检员。请逐项核对输入合同中的大盘情绪、主要指数、多空周期、外围共振、仓位上限、板块轮动、主攻板块和盘前纪律。
@@ -60,17 +62,22 @@ def apply_restrictive_review(command: dict[str, Any], review: dict[str, Any]) ->
     source_health = command.get("source_health") if isinstance(command.get("source_health"), dict) else {}
     source_publishable = source_health.get("publishable") is True
     deterministic_ready = command.get("status") == "READY_FOR_DEEPSEEK_REVIEW"
+    acceptance = command.get("operational_acceptance") if isinstance(command.get("operational_acceptance"), dict) else {}
+    release_gate_met = operational_release_gate_met(acceptance)
     publishable = (
         available
         and verdict in {"CONFIRM", "CONFIRM_WITH_RESTRICTIONS"}
         and source_publishable
         and deterministic_ready
+        and release_gate_met
     )
     publication_blockers = list(source_health.get("blockers") or [])
     if not available:
         publication_blockers.append("deepseek_unavailable")
     if verdict not in {"CONFIRM", "CONFIRM_WITH_RESTRICTIONS"}:
         publication_blockers.append(f"deepseek_verdict:{verdict}")
+    if not release_gate_met:
+        publication_blockers.append("operational_release_gate_not_met")
     return {
         **command,
         "schema_version": "a_share_premarket_command_reviewed_v1",
@@ -90,6 +97,7 @@ def apply_restrictive_review(command: dict[str, Any], review: dict[str, Any]) ->
             "source_publishable": source_publishable,
             "deepseek_available": available,
             "deepseek_verdict": verdict,
+            "operational_release_gate_met": release_gate_met,
             "blockers": list(dict.fromkeys(publication_blockers)),
         },
         "policy": {**(command.get("policy") or {}), "deepseek_adjustment_direction": "tighten_only"},

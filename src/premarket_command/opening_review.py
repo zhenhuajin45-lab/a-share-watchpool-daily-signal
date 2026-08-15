@@ -6,6 +6,8 @@ import copy
 import datetime as dt
 from typing import Any
 
+from .publisher import publication_gate_complete
+
 
 def _cap(command: dict[str, Any], key: str) -> int:
     position = command.get("position_command") if isinstance(command.get("position_command"), dict) else {}
@@ -20,7 +22,7 @@ def apply_opening_tighten_only(
     opening_command: dict[str, Any],
 ) -> dict[str, Any]:
     """Return a 09:20 revision without ever widening the published permissions."""
-    if published_command.get("release_status") != "PUBLISHED":
+    if not publication_gate_complete(published_command):
         raise ValueError("09:20 review requires a PUBLISHED baseline")
 
     result = copy.deepcopy(published_command)

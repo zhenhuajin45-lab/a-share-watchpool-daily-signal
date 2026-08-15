@@ -15,12 +15,24 @@ from premarket_command.review import apply_restrictive_review
 from premarket_command.opening_review import apply_opening_tighten_only
 from premarket_command.publisher import publish_contract
 from premarket_command.integration import plan_sector_alignment
+from premarket_command.integration import load_published_command
 
 
 class PremarketEngineTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.sample = json.loads((ROOT / "examples" / "premarket_input.sample.json").read_text(encoding="utf-8"))
+
+    def published_baseline(self) -> dict:
+        command = build_premarket_command(self.sample)
+        command["status"] = "READY_FOR_DEEPSEEK_REVIEW"
+        command["source_health"] = {"publishable": True, "blockers": []}
+        command["operational_acceptance"] = {
+            "release_gate": "MET",
+            "counts": {"replay_days": 20, "shadow_days": 5, "simulation_days": 5},
+            "checks": {"replay_20_days": True, "shadow_5_days": True, "simulation_5_days": True, "no_real_order_contract": True},
+        }
+        return apply_restrictive_review(command, {"available": True, "verdict": "CONFIRM", "recommended_position_cap_pct": 100, "sector_downgrades": []})
 
     def test_output_has_no_stock_pool(self) -> None:
         command = build_premarket_command(self.sample)
@@ -70,6 +82,11 @@ class PremarketEngineTests(unittest.TestCase):
         command = build_premarket_command(self.sample)
         command["status"] = "READY_FOR_DEEPSEEK_REVIEW"
         command["source_health"] = {"publishable": True, "blockers": []}
+        command["operational_acceptance"] = {
+            "release_gate": "MET",
+            "counts": {"replay_days": 20, "shadow_days": 5, "simulation_days": 5},
+            "checks": {"replay_20_days": True, "shadow_5_days": True, "simulation_5_days": True, "no_real_order_contract": True},
+        }
         command["position_command"].update({"base_cap_pct": 50, "conditional_expansion_cap_pct": 60})
         reviewed = apply_restrictive_review(command, {
             "available": True,
@@ -83,8 +100,7 @@ class PremarketEngineTests(unittest.TestCase):
         self.assertLessEqual(reviewed["position_command"]["conditional_expansion_cap_pct"], 30)
 
     def test_opening_review_only_tightens_cap_and_sector_set(self) -> None:
-        baseline = build_premarket_command(self.sample)
-        baseline["release_status"] = "PUBLISHED"
+        baseline = self.published_baseline()
         baseline["position_command"].update({"base_cap_pct": 50, "conditional_expansion_cap_pct": 50, "conditional_expansion_enabled": False})
         baseline["sector_rotation"]["primary_attack_sectors"] = [{"sector_name": "算力"}, {"sector_name": "通信"}]
         opening = build_premarket_command(self.sample)
@@ -108,12 +124,42 @@ class PremarketEngineTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 publish_contract(command, Path(directory))
 
+    def test_reader_rejects_manually_edited_published_flag(self) -> None:
+        command = build_premarket_command(self.sample)
+        command["release_status"] = "PUBLISHED"
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "latest.json"
+            path.write_text(json.dumps(command), encoding="utf-8")
+            value, status = load_published_command(path)
+        self.assertIsNone(value)
+        self.assertEqual(status, "NOT_PUBLISHED")
+
+    def test_deepseek_confirmation_cannot_bypass_operational_gate(self) -> None:
+        command = build_premarket_command(self.sample)
+        command["status"] = "READY_FOR_DEEPSEEK_REVIEW"
+        command["source_health"] = {"publishable": True, "blockers": []}
+        command["operational_acceptance"] = {"release_gate": "MET"}
+        reviewed = apply_restrictive_review(command, {
+            "available": True,
+            "verdict": "CONFIRM",
+            "recommended_position_cap_pct": 20,
+            "sector_downgrades": [],
+        })
+        self.assertEqual(reviewed["release_status"], "REVIEW_PENDING")
+        self.assertIn("operational_release_gate_not_met", reviewed["publication_gate"]["blockers"])
+
     def test_plan_sector_alignment_never_adds_a_direction(self) -> None:
         command = build_premarket_command(self.sample)
         command["sector_rotation"]["primary_attack_sectors"] = [{"sector_name": "通信"}]
         alignment = plan_sector_alignment(command, [{"group_key": "通信"}, {"group_key": "芯片"}])
         self.assertEqual(alignment["aligned_plan_sectors"], ["通信"])
         self.assertEqual(alignment["non_whitelist_plan_sectors"], ["芯片"])
+
+    def test_plan_sector_alignment_normalizes_concept_suffix(self) -> None:
+        command = build_premarket_command(self.sample)
+        command["sector_rotation"]["primary_attack_sectors"] = [{"sector_name": "机器人概念"}]
+        alignment = plan_sector_alignment(command, [{"group_key": "机器人"}])
+        self.assertEqual(alignment["aligned_plan_sectors"], ["机器人"])
 
     def test_index_bars_are_recomputed_without_future_data(self) -> None:
         bars = [{"date": f"202607{day:02d}", "close": 100 + day, "volume": 1000 + day} for day in range(1, 31)]

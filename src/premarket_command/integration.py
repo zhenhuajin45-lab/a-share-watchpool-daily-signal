@@ -6,6 +6,16 @@ import json
 from pathlib import Path
 from typing import Any
 
+from .publisher import publication_gate_complete
+
+
+def _canonical_sector_name(value: Any) -> str:
+    text = str(value or "").strip().replace(" ", "")
+    for suffix in ("概念", "行业", "板块"):
+        if text.endswith(suffix) and len(text) > len(suffix):
+            text = text[: -len(suffix)]
+    return text.upper()
+
 
 def load_published_command(path: Path, expected_execution_date: str | None = None) -> tuple[dict[str, Any] | None, str]:
     try:
@@ -14,7 +24,7 @@ def load_published_command(path: Path, expected_execution_date: str | None = Non
         return None, "NOT_FOUND"
     except (OSError, json.JSONDecodeError):
         return None, "INVALID"
-    if not isinstance(value, dict) or value.get("release_status") != "PUBLISHED":
+    if not isinstance(value, dict) or not publication_gate_complete(value):
         return None, "NOT_PUBLISHED"
     if expected_execution_date and str(value.get("execution_trade_date") or "").replace("-", "") != expected_execution_date.replace("-", ""):
         return None, "DATE_MISMATCH"
@@ -23,8 +33,8 @@ def load_published_command(path: Path, expected_execution_date: str | None = Non
 
 def plan_sector_alignment(command: dict[str, Any], signals: list[dict[str, Any]]) -> dict[str, Any]:
     rotation = command.get("sector_rotation") if isinstance(command.get("sector_rotation"), dict) else {}
-    whitelist = {
-        str(item.get("sector_name") or "").strip()
+    whitelist_by_key = {
+        _canonical_sector_name(item.get("sector_name")): str(item.get("sector_name") or "").strip()
         for item in rotation.get("primary_attack_sectors") or []
         if isinstance(item, dict) and item.get("sector_name")
     }
@@ -35,9 +45,9 @@ def plan_sector_alignment(command: dict[str, Any], signals: list[dict[str, Any]]
         sector = str(signal.get("group_key") or signal.get("niche") or "").strip()
         if not sector:
             continue
-        (aligned if sector in whitelist else observe_only).append(sector)
+        (aligned if _canonical_sector_name(sector) in whitelist_by_key else observe_only).append(sector)
     return {
-        "whitelist": sorted(whitelist),
+        "whitelist": sorted(whitelist_by_key.values()),
         "aligned_plan_sectors": sorted(set(aligned)),
         "non_whitelist_plan_sectors": sorted(set(observe_only)),
         "policy": "alignment_is_informational_until_release_gate_met",

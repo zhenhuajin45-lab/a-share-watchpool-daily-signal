@@ -24,6 +24,7 @@ Python 建议使用与本地 GM SDK 兼容的版本，不要为了本包强制�
 
 ```powershell
 python adapters\gm_market_data_adapter.py --trade-date 20260814 --output data\raw\gm\20260814.json
+python adapters\gm_market_breadth_sector_adapter.py --trade-date 20260814 --output data\raw\gm_market_sector\20260814.bundle.json --evidence-dir data\raw\gm_market_sector --include-concepts
 ```
 
 3. 核对四个指数各有至少 30 根日线，推荐 80 根。
@@ -49,7 +50,7 @@ python adapters\kaipanla_windows_uia_capture.py `
 - 区间统计页：5 日和 10 日强度、涨幅、净额、成交、主力买卖、净流入天数。
 - “明天炒什么”：最新文章日期、标题、风险词。
 
-原始 UIA 文本必须先落盘，再解析为标准合同。不要让页面抓取代码直接修改仓位。
+原始 UIA 文本必须先落盘，再解析为交叉证据合同。不要让页面抓取代码直接修改仓位；GM 全市场复算是情绪和板块的主源。
 
 若 UIA 读不到表格：检查开盘啦与 Python 是否同一权限级别、窗口是否可见、Windows UI Automation 是否暴露子元素。OCR 只能做备份源，OCR 结果必须带截图和置信度。
 
@@ -83,14 +84,22 @@ python adapters\author_ratio_ledger.py `
 
 ## 6. 合同构建与 DeepSeek
 
-标准化各模块后合并成 `premarket_input.YYYYMMDD.json`：
+推荐用一键脚本采集、标准化和构建：
 
 ```powershell
-python tools\build_command.py --input data\normalized\premarket_input.20260817.json --output reports\premarket_command.20260817.draft.json
-python tools\run_deepseek_review.py --command reports\premarket_command.20260817.draft.json --review-output reports\deepseek_review.20260817.json --final-output reports\premarket_command.20260817.json
+. .\scripts\Set-PremarketSecrets.ps1
+.\scripts\Invoke-PremarketCommand.ps1 -SourceTradeDate 20260814 -ExecutionTradeDate 20260817 -RunDeepSeek
 ```
 
-只有最终文件的 `release_status=PUBLISHED` 才允许被其它策略读取。若 DeepSeek 不可用，可由人工审核生成带签名的发布副本；不能让 API 故障自动变成看空，也不能直接跳过审核。
+执行日 09:20 使用 GM 集合竞价 tick 生成只收紧复核：
+
+```powershell
+.\scripts\Invoke-PremarketOpeningReview.ps1 -ExecutionTradeDate 20260817 -PublishedContract data\premarket_command\published\latest.json -PreviousGmBundle data\raw\gm_market_sector\20260814.bundle.json
+```
+
+GM `current(..., include_call_auction=True)` 的快照日期必须等于执行日；周末、节假日或旧快照会标记 `UNAVAILABLE`，保留基础上限但取消条件扩张。
+
+只有最终文件的 `release_status=PUBLISHED` 才允许被其它策略读取。DeepSeek 不可用时保持 `REVIEW_PENDING`；不能让 API 故障自动变成看空，也不能手工跳过审核与 `20+5+5` 门槛。
 
 ## 7. 与其它策略集成
 

@@ -27,7 +27,7 @@ def main() -> int:
     temporary.write_text(json.dumps(command, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     temporary.replace(args.output)
     print(json.dumps({"status": command["status"], "release_status": command["release_status"], "position_cap": command["position_command"], "output": str(args.output)}, ensure_ascii=False))
-    return 0
+    return 0 if command.get("status") == "READY_FOR_DEEPSEEK_REVIEW" else 2
 
 
 if __name__ == "__main__":

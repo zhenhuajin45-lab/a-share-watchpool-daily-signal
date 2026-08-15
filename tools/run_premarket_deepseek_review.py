@@ -55,6 +55,7 @@ def call_api(prompt: str, api_key: str, model: str, api_url: str, timeout: int) 
         "model": model,
         "messages": [{"role": "user", "content": prompt}],
         "temperature": 0.1,
+        "max_tokens": 4096,
         "response_format": {"type": "json_object"},
     }).encode("utf-8")
     request = urllib.request.Request(api_url, data=body, method="POST", headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"})
@@ -99,7 +100,19 @@ def main() -> int:
         "model": args.model,
         "credential_logged": False,
     }
-    if not key:
+    deterministic_ready = command.get("status") == "READY_FOR_DEEPSEEK_REVIEW"
+    if not deterministic_ready:
+        review = {
+            "schema_version": "premarket_deepseek_review_v1",
+            "available": False,
+            "verdict": "REVIEW_PENDING",
+            "conclusion": "Deterministic command is incomplete; remote review was intentionally skipped.",
+            "recommended_position_cap_pct": (command.get("position_command") or {}).get("base_cap_pct", 0),
+            "disagreements": ["deterministic_command_not_ready"],
+            "sector_downgrades": [],
+        }
+        raw_response.update({"available": False, "api_called": False, "error": "deterministic_command_not_ready"})
+    elif not key:
         review = {
             "schema_version": "premarket_deepseek_review_v1",
             "available": False,
@@ -109,11 +122,11 @@ def main() -> int:
             "disagreements": ["DEEPSEEK_API_KEY_missing"],
             "sector_downgrades": [],
         }
-        raw_response.update({"available": False, "error": "DEEPSEEK_API_KEY_missing"})
+        raw_response.update({"available": False, "api_called": False, "error": "DEEPSEEK_API_KEY_missing"})
     else:
         try:
             review, api_payload = call_api(prompt, key, args.model, args.api_url, args.timeout)
-            raw_response.update({"available": True, "response": api_payload})
+            raw_response.update({"available": True, "api_called": True, "response": api_payload})
         except Exception as exc:
             review = {
                 "schema_version": "premarket_deepseek_review_v1",
@@ -124,7 +137,7 @@ def main() -> int:
                 "disagreements": [str(exc)[:300]],
                 "sector_downgrades": [],
             }
-            raw_response.update({"available": False, "error": str(exc)[:500]})
+            raw_response.update({"available": False, "api_called": True, "error": str(exc)[:500]})
     final = apply_restrictive_review(command, review)
     for path, value in ((raw_output, raw_response), (args.review_output, review), (args.final_output, final)):
         write_atomic(path, json.dumps(value, ensure_ascii=False, indent=2) + "\n")

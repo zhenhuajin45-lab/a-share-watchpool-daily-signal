@@ -13,7 +13,9 @@
   "author_ratio": {},
   "external_market": {},
   "sector_cycle": {},
-  "topic_context": {}
+  "topic_context": {},
+  "cross_evidence": {"kaipanla": {}},
+  "operational_acceptance": {"release_gate": "NOT_MET"}
 }
 ```
 
@@ -24,7 +26,8 @@
 必需字段：
 
 - `trade_date`：数据归属交易日。
-- `composite_strength`：开盘啦综合强度 0-100。
+- `source`：必须为 `GM_*` 主源标识。
+- `composite_strength`：GM 全市场复算综合强度 0-100。
 - `breadth.rise_count/fall_count`。
 - `turnover.amount_yi/change_pct`。
 - `limit_structure.limit_up_count/limit_down_count`。
@@ -32,7 +35,7 @@
 - `limit_structure.yesterday_chain_return_pct`。
 - `limit_structure.yesterday_break_return_pct`。
 
-所有字段必须保留 `captured_at`、`source_quality` 和原始 UI 快照路径。解析失败不能复用另一交易日的数字冒充今日。
+所有字段必须能追溯 GM 原始 bars、历史涨跌停价和全市场覆盖率。开盘啦解析失败不能阻塞 GM 草稿，也不能复用另一交易日数字冒充今日。
 
 ## 3. `major_indices`
 
@@ -98,14 +101,15 @@
 - `premarket_disciplines`。
 - `source_health`。
 
-`release_status` 初始必须为 `DRAFT_REVIEW_REQUIRED`。DeepSeek 或人工复核后才可成为 `PUBLISHED`。
+`release_status` 初始必须为 `DRAFT_REVIEW_REQUIRED`。只有确定性数据源、DeepSeek 严格 JSON 复核和结构完整的 `20+5+5` 验收门均通过，才可成为 `PUBLISHED`；不能手工改标志绕过。
 
 ## 9. 新鲜度与降级
 
 | 数据 | 盘前最大建议时延 | 失效处理 |
 | --- | ---: | --- |
 | 外围行情 | 30 分钟 | 降低置信度；科技方向不自动放行 |
-| 开盘啦情绪/板块 | 20 分钟 | 保留确定性基础仓位，禁止条件扩张 |
+| GM 全市场情绪/板块 | 上一交易日收盘 | 日期或覆盖率不达标则草稿仓位归零并阻止复核发布 |
+| 开盘啦交叉证据 | 20 分钟 | 标记不可用；不影响 GM 确定性草稿，不授予权限 |
 | GM 指数日线 | 上一交易日收盘 | 缺 2 个指数则上限压到 35% |
 | 作者多空比 | 最近已发布交易日 | 标记断更或待补，不填 0 |
 | 题材资讯 | 60 分钟 | 不用于新增主攻，只保留已有生命周期证据 |

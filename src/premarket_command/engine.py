@@ -17,7 +17,7 @@ COMPONENT_WEIGHTS = {
     "limit_structure": 0.14,
     "profit_effect": 0.17,
     "turnover": 0.10,
-    "kaipanla_strength": 0.12,
+    "gm_market_strength": 0.12,
     "index_resonance": 0.13,
     "mainline_cycle": 0.12,
 }
@@ -140,7 +140,7 @@ def _emotion_assessment(sentiment: dict[str, Any]) -> dict[str, Any]:
         "score": score,
         "base_position_cap_pct": cap,
         "components": {
-            "kaipanla_composite_strength": round(strength, 2),
+            "gm_market_composite_strength": round(strength, 2),
             "breadth_score": round(breadth_score, 2),
             "limit_structure_score": round(limit_score, 2),
             "profit_effect_score": round(profit_score, 2),
@@ -253,7 +253,7 @@ def _swr_components(
 
     strength = number(sentiment.get("composite_strength"))
     if strength is not None:
-        result.append(_component("kaipanla_strength", math.exp((clamp(strength) - 50.0) / 18.0), {"composite_strength": round(strength, 2)}))
+        result.append(_component("gm_market_strength", math.exp((clamp(strength) - 50.0) / 18.0), {"composite_strength": round(strength, 2)}))
 
     index_rows = [item for item in indices if isinstance(item, dict) and item.get("status") == "OK"]
     trend_scores = [INDEX_TREND_SCORES.get(str(item.get("trend") or "")) for item in index_rows]
@@ -496,6 +496,8 @@ def build_premarket_command(payload: dict[str, Any]) -> dict[str, Any]:
     author = _author_view(payload.get("author_ratio") if isinstance(payload.get("author_ratio"), dict) else {})
     external = _external_view(payload.get("external_market") if isinstance(payload.get("external_market"), dict) else {})
     topics = payload.get("topic_context") if isinstance(payload.get("topic_context"), dict) else {}
+    cross_evidence = payload.get("cross_evidence") if isinstance(payload.get("cross_evidence"), dict) else {}
+    operational_acceptance = payload.get("operational_acceptance") if isinstance(payload.get("operational_acceptance"), dict) else {"release_gate": "NOT_MET"}
 
     emotion = _emotion_assessment(sentiment)
     swr = _build_swr(sentiment, indices, sector_cycle)
@@ -535,7 +537,6 @@ def build_premarket_command(payload: dict[str, Any]) -> dict[str, Any]:
     sentiment_date = _valid_trade_date(sentiment.get("trade_date"))
     sector_date = _valid_trade_date(sector_cycle.get("trade_date"))
     external_date = _valid_trade_date((payload.get("external_market") or {}).get("trade_date")) if isinstance(payload.get("external_market"), dict) else None
-    topic_date = _valid_trade_date(topics.get("trade_date") or topics.get("source_trade_date"))
     author_observations = payload.get("author_ratio", {}).get("observations", []) if isinstance(payload.get("author_ratio"), dict) else []
     author_dates = [
         _valid_trade_date(item.get("trade_date"))
@@ -556,10 +557,11 @@ def build_premarket_command(payload: dict[str, Any]) -> dict[str, Any]:
         "author_ratio_date": latest_author_date == source_trade_date,
         "sector_cycle_date": sector_date == source_trade_date,
         "external_market_date": external_date == execution_trade_date,
-        "topic_context_date": topic_date in {source_trade_date, execution_trade_date},
     }
+    sentiment_is_gm = str(sentiment.get("source") or "").upper().startswith("GM_")
+    sector_is_gm = str(sector_cycle.get("source") or "").upper().startswith("GM_")
     required_sources = {
-        "market_sentiment": str(sentiment.get("status") or "").upper() in {"OK", "READY"},
+        "market_sentiment": str(sentiment.get("status") or "").upper() in {"OK", "READY"} and sentiment_is_gm,
         "major_indices": sum(1 for item in indices if item.get("status") == "OK") >= 3,
         "author_ratio": author.get("available") is True,
         "external_market": (
@@ -568,8 +570,7 @@ def build_premarket_command(payload: dict[str, Any]) -> dict[str, Any]:
             and external.get("level") not in {"UNKNOWN", "UNAVAILABLE", ""}
             and external.get("fresh_for_execution") is True
         ),
-        "sector_cycle": str(sector_cycle.get("status") or "").upper() in {"OK", "READY"} and bool(sector_cycle.get("sectors")),
-        "topic_context": str(topics.get("status") or "").upper() in {"OK", "READY"},
+        "sector_cycle": str(sector_cycle.get("status") or "").upper() in {"OK", "READY"} and bool(sector_cycle.get("sectors")) and sector_is_gm,
     }
     missing = [name for name, available in required_sources.items() if not available]
     stale = [name for name, fresh in fresh_sources.items() if not fresh]
@@ -604,8 +605,10 @@ def build_premarket_command(payload: dict[str, Any]) -> dict[str, Any]:
             "data_quality_cap_pct": data_quality_cap,
         },
         "sector_rotation": rotation,
+        "cross_evidence": cross_evidence,
+        "operational_acceptance": operational_acceptance,
         "opening_change_triggers": [
-            "09:20重新抓取外围、指数期货/竞价、开盘啦情绪和板块排名，计算与盘前快照的差量。",
+            "09:20重新抓取外围、指数期货/竞价和GM市场/板块事实；开盘啦可作交叉证据，计算与盘前快照的差量。",
             "任一主要指数由强转弱、外围冲击升至HIGH、主攻板块跌出前12或资金转负时收紧仓位。",
             "任何数据源缺失只降低置信度并报警，不自动视为空头，也不能据此放宽门控。",
         ],
@@ -622,6 +625,7 @@ def build_premarket_command(payload: dict[str, Any]) -> dict[str, Any]:
             "execution_trade_date": execution_trade_date,
             "latest_author_date": latest_author_date,
             "dated_index_count": dated_index_count,
+            "gm_primary_provenance": {"market_sentiment": sentiment_is_gm, "sector_cycle": sector_is_gm},
             "missing": missing,
             "stale_or_undated": stale,
             "blockers": blockers,
@@ -634,5 +638,7 @@ def build_premarket_command(payload: dict[str, Any]) -> dict[str, Any]:
             "deepseek_can_add_attack_sector": False,
             "missing_source_is_bearish": False,
             "external_source_can_grant_stock_entry": False,
+            "kaipanla_can_grant_permission": False,
+            "operational_release_gate_required": True,
         },
     }

@@ -23,6 +23,7 @@ docs/IMPORT_MANIFEST.md      原包来源、哈希与导入边界
 docs/DEPLOYMENT_GATES.md     原服务器部署前强制门禁
 docs/premarket_command/      盘前指挥台逻辑、Windows部署、运行手册和当前落地状态
 scripts/validate_repository.ps1  本地统一验证入口
+scripts/Invoke-PremarketCommand.ps1  Windows 盘前采集/标准化/复核一键入口
 ```
 
 ## 本地验证
@@ -46,7 +47,8 @@ python .\tools\validate_premarket_package.py
 
 ## 运行边界
 
-- 飞书 Webhook、GoldMiner Token、DeepSeek Key 只能通过服务器环境或本地密钥文件注入，禁止提交。
+- 飞书 Webhook、GoldMiner Token、DeepSeek Key 只能通过安全环境变量注入，禁止提交。
+- 建议点源运行 `scripts/Set-PremarketSecrets.ps1` 以隐藏输入；聊天中曾暴露的密钥应在部署前轮换。
 - `data/live_signal`、分钟缓存、JSONL证据和虚拟信号台账属于运行状态，禁止纳入 Git，也不能在代码回滚时覆盖。
 - `A_SHARE_ROTATION_ENABLE_DAILY_BAR_EXECUTION` 必须保持关闭，除非另有经过审批和完整回归的订单执行任务。
 - 信号虚拟台账不是券商真实持仓，不能推导真实可卖数量。
