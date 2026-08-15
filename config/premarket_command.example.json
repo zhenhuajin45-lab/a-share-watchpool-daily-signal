@@ -1,0 +1,20 @@
+{
+  "timezone": "Asia/Shanghai",
+  "deepseek_required_for_publish": true,
+  "deepseek_model": "deepseek-v4-pro",
+  "gm_index_symbols": {
+    "SHSE.000001": "上证指数",
+    "SZSE.399001": "深证成指",
+    "SZSE.399006": "创业板指",
+    "SHSE.000688": "科创50"
+  },
+  "kaipanla_window_title_regex": ".*开盘啦.*",
+  "source_staleness_minutes": {
+    "premarket_external": 30,
+    "kaipanla_sentiment": 20,
+    "kaipanla_sector": 20,
+    "author_ratio": 2880
+  },
+  "output_dir": "C:/a_share_premarket_command/reports",
+  "runtime_mode": "DRY_RUN"
+}

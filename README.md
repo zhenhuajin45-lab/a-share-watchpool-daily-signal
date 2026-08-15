@@ -11,6 +11,7 @@
 - 实时服务仍依赖原服务器的 `D:\codex\a_share_rotation` 数据目录。
 - 当前源码包缺少把 `LiveSignalService` 接入 GoldMiner 回调和 11 个调度任务的实时启动适配器。
 - 因此本仓库当前是“已纳管、待补齐运行入口”，不能标记为可直接部署。
+- 已引入独立的 `src/premarket_command` 盘前指挥层；证据不全、日期不明、DeepSeek 不可用或验收期不足时均不能发布。
 
 ## 目录
 
@@ -20,6 +21,7 @@ universe/                    固定观察池、自研池与稳定分类
 tests/                       确定性回归测试
 docs/IMPORT_MANIFEST.md      原包来源、哈希与导入边界
 docs/DEPLOYMENT_GATES.md     原服务器部署前强制门禁
+docs/premarket_command/      盘前指挥台逻辑、Windows部署、运行手册和当前落地状态
 scripts/validate_repository.ps1  本地统一验证入口
 ```
 
@@ -28,6 +30,7 @@ scripts/validate_repository.ps1  本地统一验证入口
 ```powershell
 python -m pip install -r requirements.txt
 powershell -ExecutionPolicy Bypass -File .\scripts\validate_repository.ps1
+python .\tools\validate_premarket_package.py
 ```
 
 `requirements.txt` 记录本机已经通过导入检查的版本。部署到原服务器前，必须先导出并对比服务器实际 Python、GoldMiner SDK、`numpy` 和 `pandas` 版本，不得直接覆盖生产环境。

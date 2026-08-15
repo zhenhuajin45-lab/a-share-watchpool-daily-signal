@@ -1,0 +1,65 @@
+{
+  "source_trade_date": "20260814",
+  "execution_trade_date": "20260817",
+  "market_sentiment": {
+    "status": "OK",
+    "trade_date": "20260814",
+    "composite_strength": 53,
+    "breadth": {"rise_count": 2400, "fall_count": 2970},
+    "turnover": {"amount_yi": 21566, "change_pct": -16.02},
+    "limit_structure": {
+      "limit_up_count": 63,
+      "limit_down_count": 10,
+      "break_board_rate_pct": 23.2,
+      "yesterday_limit_up_return_pct": -0.09,
+      "yesterday_chain_return_pct": -0.42,
+      "yesterday_break_return_pct": -2.04
+    }
+  },
+  "major_indices": [
+    {"name": "上证指数", "symbol": "SHSE.000001", "status": "OK", "trend": "MIXED", "trend_label": "震荡分化", "close": 3927.18, "ma5": 3940.30, "ma10": 3905.23, "ma20": 3870.39, "return_5d_pct": -0.33, "return_20d_pct": 4.33, "volume_ratio_5d": 0.92},
+    {"name": "深证成指", "symbol": "SZSE.399001", "status": "OK", "trend": "BULLISH_ALIGNMENT", "trend_label": "多头排列", "close": 14354.31, "return_5d_pct": 0.30, "return_20d_pct": 4.72, "volume_ratio_5d": 0.94},
+    {"name": "创业板指", "symbol": "SZSE.399006", "status": "OK", "trend": "BULLISH_ALIGNMENT", "trend_label": "多头排列", "close": 3626.30, "return_5d_pct": 1.77, "return_20d_pct": 5.77, "volume_ratio_5d": 0.94},
+    {"name": "科创50", "symbol": "SHSE.000688", "status": "OK", "trend": "BELOW_MA20", "trend_label": "趋势偏弱", "close": 1717.68, "return_5d_pct": -1.51, "return_20d_pct": 0.13, "volume_ratio_5d": 0.79}
+  ],
+  "author_ratio": {
+    "metric_name": "作者多空比",
+    "calibration_only": true,
+    "thresholds": {"bottom_watch": 0.3, "negative_effect": 0.6, "balance": 1.0, "stage_top_watch_1": 1.5, "stage_top_watch_2": 2.0},
+    "observations": [
+      {"trade_date": "20260804", "ratio": 4.54, "verification": "ARTICLE_IMAGE_VERIFIED"},
+      {"trade_date": "20260805", "ratio": 6.40, "verification": "ARTICLE_IMAGE_VERIFIED"},
+      {"trade_date": "20260811", "ratio": 5.22, "verification": "USER_CONFIRMED"},
+      {"trade_date": "20260812", "ratio": 4.20, "verification": "USER_CONFIRMED"},
+      {"trade_date": "20260813", "ratio": 2.88, "verification": "ARTICLE_IMAGE_VERIFIED"},
+      {"trade_date": "20260814", "ratio": 1.69, "verification": "ARTICLE_IMAGE_VERIFIED"}
+    ]
+  },
+  "external_market": {
+    "status": "ok",
+    "source_quality": "verified_live",
+    "external_tech_shock": {"level": "LOW", "score": 0, "entry_policy": "normal", "position_cap_pct": null, "reasons": ["no_external_tech_shock_evidence_default_pass"]},
+    "markets": [
+      {"name": "纳斯达克综合指数", "pct": 0.81},
+      {"name": "费城半导体指数", "pct": 0.46},
+      {"name": "韩国KOSPI", "pct": 2.42},
+      {"name": "台湾加权指数", "pct": -0.46}
+    ]
+  },
+  "sector_cycle": {
+    "status": "READY",
+    "trade_date": "20260814",
+    "sectors": [
+      {"sector_code": "801807", "sector_name": "算力", "stage": "ACCELERATION", "cycle_day": 1, "current_rank": 1, "validation_state": "CONFIRMED", "validation_score": 100, "current_main_net_yi": 58.47, "interval_return_pct": 1.45, "interval_net_yi": 67.34, "net_inflow_days": 3, "intraday_rhythm": "PERSISTENT"},
+      {"sector_code": "801660", "sector_name": "通信", "stage": "ACCELERATION", "cycle_day": 1, "current_rank": 3, "validation_state": "CONFIRMED", "validation_score": 89, "current_main_net_yi": 166.70, "interval_return_pct": 1.95, "interval_net_yi": 23.25, "net_inflow_days": 2, "intraday_rhythm": "PERSISTENT"},
+      {"sector_code": "803023", "sector_name": "AI应用", "stage": "STARTUP", "cycle_day": 1, "current_rank": 12, "validation_state": "WATCH", "validation_score": 54, "current_main_net_yi": 3.26, "interval_return_pct": 0.91, "interval_net_yi": -16.83, "net_inflow_days": 2, "intraday_rhythm": "MIXED"},
+      {"sector_code": "801159", "sector_name": "机器人概念", "stage": "DIVERGENCE", "cycle_day": 1, "current_rank": 5, "validation_state": "WATCH", "validation_score": 56, "current_main_net_yi": -5.79, "interval_return_pct": 1.12, "interval_net_yi": -10.95, "net_inflow_days": 2, "intraday_rhythm": "DISTRIBUTING"},
+      {"sector_code": "801001", "sector_name": "芯片", "stage": "DIVERGENCE", "cycle_day": 1, "current_rank": 2, "validation_state": "WATCH", "validation_score": 48, "current_main_net_yi": -7.24, "interval_return_pct": 2.32, "interval_net_yi": -38.65, "net_inflow_days": 2, "intraday_rhythm": "DISTRIBUTING"}
+    ]
+  },
+  "topic_context": {
+    "status": "OK",
+    "headlines": ["科技业绩披露、调研密集", "DeepSeek大动作", "美国加息预期再度降温"],
+    "risk_headlines": []
+  }
+}

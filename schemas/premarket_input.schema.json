@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "a_share_premarket_input_v1",
+  "type": "object",
+  "required": [
+    "source_trade_date",
+    "execution_trade_date",
+    "market_sentiment",
+    "major_indices",
+    "author_ratio",
+    "external_market",
+    "sector_cycle",
+    "topic_context"
+  ],
+  "properties": {
+    "source_trade_date": {"type": "string", "pattern": "^[0-9]{8}$"},
+    "execution_trade_date": {"type": "string", "pattern": "^[0-9]{8}$"},
+    "market_sentiment": {"type": "object"},
+    "major_indices": {"type": "array", "minItems": 4, "items": {"type": "object"}},
+    "author_ratio": {"type": "object"},
+    "external_market": {"type": "object"},
+    "sector_cycle": {"type": "object"},
+    "topic_context": {"type": "object"}
+  },
+  "additionalProperties": true
+}

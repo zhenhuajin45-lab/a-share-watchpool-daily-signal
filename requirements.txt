@@ -4,3 +4,4 @@ numpy==2.3.2
 pandas==2.3.3
 gm==3.0.183
 pytest==9.1.1
+pywinauto==0.6.9

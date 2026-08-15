@@ -20,6 +20,7 @@ venv/
 data/
 outputs/
 logs/
+reports/
 *.jsonl
 *.pkl
 *.log
