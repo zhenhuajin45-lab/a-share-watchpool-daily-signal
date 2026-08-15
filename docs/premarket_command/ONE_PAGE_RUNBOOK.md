@@ -10,3 +10,4 @@
 8. 飞书：仅 `PUBLISHED` 显示可用摘要；状态为 `NOT_FOUND`/`NOT_PUBLISHED` 时现有每日计划继续独立运行，不放宽门控。
 9. 回滚：切回已标记 Git commit/tag；不要覆盖服务器 `data/`、日志、账本、飞书 outbox 或虚拟仓位状态。
 10. 升级为正式消费前运行 `tools\evaluate_premarket_release_gate.py`，必须得到带完整 `checks/counts` 的 `release_gate=MET`；发布器会二次校验，任何未通过项都不得接真实订单函数。
+11. 跨环境部署使用最终 v6 补丁包和 `07_OTHER_ENVIRONMENT_HANDOVER.md`；下一交易日按 `08_NEXT_TRADING_DAY_CHECKLIST.md` 执行。GM/开盘啦任务必须与桌面终端同用户、同会话、同权限级别。

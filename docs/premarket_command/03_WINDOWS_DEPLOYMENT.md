@@ -65,15 +65,13 @@ python adapters\kaipanla_windows_uia_capture.py `
 5. 作者未发布时登记 `AUTHOR_DID_NOT_PUBLISH`。
 6. 同日新值和已有值冲突时进入隔离，不静默覆盖。
 
-示例：
+推荐先生成带截图 SHA256 的证据清单，再由夜间任务统一写账本。同一文章给出今日和上个交易日时，不直接运行两次 ledger 命令：
 
 ```powershell
-python adapters\author_ratio_ledger.py `
-  --ledger data\normalized\author_ratio.json `
-  --trade-date 20260814 --ratio 1.69 `
-  --verification ARTICLE_IMAGE_VERIFIED `
-  --source-url "公众号文章URL" `
-  --evidence-text "图片中明确标注今日1.69，上个交易日2.88"
+python tools\author_ratio_nightly_task.py `
+  --trade-date 20260814 `
+  --evidence data\raw\author_ratio\20260814\article_evidence.json `
+  --ledger data\normalized\author_ratio.json
 ```
 
 ## 5. 外围行情
@@ -115,3 +113,5 @@ GM `current(..., include_call_auction=True)` 的快照日期必须等于执行�
 ## 8. 安全顺序
 
 离线样例 -> GM 数据 DRY_RUN -> 只生成盘前合同 -> 多策略影子读取 -> 模拟盘 -> 人工审核 -> 再考虑实盘。不得把本包直接接到订单函数。
+
+其它服务器的完整补丁应用、状态备份、作者证据迁移、下一交易日逐时运行和回滚流程见 `07_OTHER_ENVIRONMENT_HANDOVER.md`；操作员使用 `08_NEXT_TRADING_DAY_CHECKLIST.md` 逐项签字确认。
