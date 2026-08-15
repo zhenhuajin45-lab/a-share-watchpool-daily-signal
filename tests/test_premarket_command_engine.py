@@ -23,15 +23,26 @@ class PremarketEngineTests(unittest.TestCase):
     def setUpClass(cls) -> None:
         cls.sample = json.loads((ROOT / "examples" / "premarket_input.sample.json").read_text(encoding="utf-8"))
 
+    def met_operational_gate(self) -> dict:
+        return {
+            "schema_version": "premarket_release_gate_v2",
+            "release_gate": "MET",
+            "counts": {"replay_days": 20, "shadow_days": 5, "simulation_days": 5},
+            "checks": {
+                "replay_20_days": True,
+                "shadow_5_days": True,
+                "simulation_5_days": True,
+                "no_real_order_contract": True,
+                "all_evidence_valid": True,
+            },
+            "evidence_quality": {"invalid_files": 0},
+        }
+
     def published_baseline(self) -> dict:
         command = build_premarket_command(self.sample)
         command["status"] = "READY_FOR_DEEPSEEK_REVIEW"
         command["source_health"] = {"publishable": True, "blockers": []}
-        command["operational_acceptance"] = {
-            "release_gate": "MET",
-            "counts": {"replay_days": 20, "shadow_days": 5, "simulation_days": 5},
-            "checks": {"replay_20_days": True, "shadow_5_days": True, "simulation_5_days": True, "no_real_order_contract": True},
-        }
+        command["operational_acceptance"] = self.met_operational_gate()
         return apply_restrictive_review(command, {"available": True, "verdict": "CONFIRM", "recommended_position_cap_pct": 100, "sector_downgrades": []})
 
     def test_output_has_no_stock_pool(self) -> None:
@@ -103,11 +114,7 @@ class PremarketEngineTests(unittest.TestCase):
         command = build_premarket_command(self.sample)
         command["status"] = "READY_FOR_DEEPSEEK_REVIEW"
         command["source_health"] = {"publishable": True, "blockers": []}
-        command["operational_acceptance"] = {
-            "release_gate": "MET",
-            "counts": {"replay_days": 20, "shadow_days": 5, "simulation_days": 5},
-            "checks": {"replay_20_days": True, "shadow_5_days": True, "simulation_5_days": True, "no_real_order_contract": True},
-        }
+        command["operational_acceptance"] = self.met_operational_gate()
         command["position_command"].update({"base_cap_pct": 50, "conditional_expansion_cap_pct": 60})
         reviewed = apply_restrictive_review(command, {
             "available": True,

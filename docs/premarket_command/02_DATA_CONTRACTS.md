@@ -117,3 +117,12 @@
 | 题材资讯 | 60 分钟 | 不用于新增主攻，只保留已有生命周期证据 |
 
 每个输出必须留 `evidence_paths` 或等价证据索引，能够追溯原始快照、解析结果和最终合同。
+
+## 10. `20+5+5` 验收证据
+
+验收门只统计通过结构校验的证据文件，普通带日期 JSON 不计数。三类证据的 `schema_version` 分别为 `premarket_replay_evidence_v1`、`premarket_shadow_evidence_v1`、`premarket_simulation_evidence_v1`，并必须满足：
+
+- `status=PASS`、合法 `execution_trade_date`、阶段必需 `checks` 全为 `true`。
+- `evidence_files[]` 至少一项，每项本地文件必须存在且 SHA-256 一致。
+- 影子与模拟盘必须显式 `real_orders_sent=false`；缺字段不再默认视为未发真实订单。
+- 任一无效证据都会写入 `evidence_quality.invalid_evidence` 并阻断 `premarket_release_gate_v2`。

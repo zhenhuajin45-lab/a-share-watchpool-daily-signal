@@ -10,11 +10,16 @@ REQUIRED_CHECKS = (
     "shadow_5_days",
     "simulation_5_days",
     "no_real_order_contract",
+    "all_evidence_valid",
 )
 
 
 def operational_release_gate_met(value: Any) -> bool:
-    if not isinstance(value, dict) or str(value.get("release_gate") or "").upper() != "MET":
+    if (
+        not isinstance(value, dict)
+        or value.get("schema_version") != "premarket_release_gate_v2"
+        or str(value.get("release_gate") or "").upper() != "MET"
+    ):
         return False
     checks = value.get("checks") if isinstance(value.get("checks"), dict) else {}
     counts = value.get("counts") if isinstance(value.get("counts"), dict) else {}
@@ -26,4 +31,9 @@ def operational_release_gate_met(value: Any) -> bool:
         )
     except (TypeError, ValueError):
         return False
-    return enough_days and all(checks.get(name) is True for name in REQUIRED_CHECKS)
+    quality = value.get("evidence_quality") if isinstance(value.get("evidence_quality"), dict) else {}
+    try:
+        no_invalid_evidence = int(quality.get("invalid_files", -1)) == 0
+    except (TypeError, ValueError):
+        return False
+    return enough_days and no_invalid_evidence and all(checks.get(name) is True for name in REQUIRED_CHECKS)
