@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Local environments and secrets
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+*DEEPSEEK_API_LOCAL.txt
+*.secret
+
+# Runtime evidence and caches (must be preserved on the server, not committed)
+data/
+outputs/
+logs/
+*.jsonl
+*.pkl
+*.log
+
+# Imported transport archives; hashes are recorded in docs/IMPORT_MANIFEST.md
+src.zip
+universe.zip
+
+# Editor and OS files
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+*.tmp
