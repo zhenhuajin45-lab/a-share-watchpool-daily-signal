@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "a_share_premarket_command_v1",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "source_trade_date",
+    "execution_trade_date",
+    "release_status",
+    "market_emotion",
+    "major_indices",
+    "author_long_short_ratio",
+    "internal_swr",
+    "external_resonance",
+    "position_command",
+    "sector_rotation",
+    "premarket_disciplines",
+    "source_health",
+    "policy"
+  ],
+  "properties": {
+    "release_status": {"enum": ["DRAFT_REVIEW_REQUIRED", "REVIEW_PENDING", "PUBLISHED"]},
+    "position_command": {
+      "type": "object",
+      "required": ["base_cap_pct", "conditional_expansion_cap_pct"],
+      "properties": {
+        "base_cap_pct": {"type": "integer", "minimum": 0, "maximum": 100},
+        "conditional_expansion_cap_pct": {"type": "integer", "minimum": 0, "maximum": 100}
+      }
+    },
+    "policy": {
+      "type": "object",
+      "properties": {"contains_stock_pool": {"const": false}}
+    }
+  },
+  "additionalProperties": true
+}

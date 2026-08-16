@@ -89,6 +89,7 @@ from volume_soft_factor import (
     format_volume_factor_line,
     normalize_effect_mode,
 )
+from premarket_command.integration import feishu_command_lines, load_published_command
 
 
 ROOT = Path(r"D:\codex\a_share_rotation")
@@ -2959,6 +2960,12 @@ class LiveSignalService:
             "rule": "D-1 only; MA is low-weight prior; intraday facts can override",
         }
         advice = self.advisor.summarize(facts)
+        command_path = Path(os.getenv(
+            "A_SHARE_PREMARKET_COMMAND_FILE",
+            str(ROOT / "data" / "premarket_command" / "published" / "latest.json"),
+        ))
+        premarket_command, premarket_command_status = load_published_command(command_path, now.strftime("%Y%m%d"))
+        command_lines = feishu_command_lines(premarket_command, premarket_command_status, facts["daily"].get("signals") or [])
         text = "\n".join([
             "【A股轮动｜盘前行动计划】",
             f"数据截止：{daily.get('asof')}；精选池：{len(self.pool)}只；可用日线：{daily.get('available_size')}",
@@ -2966,6 +2973,7 @@ class LiveSignalService:
             f"市场许可：{permission.get('state_cn')}｜新仓{permission.get('new_entry_permission')}｜"
             f"持仓：{permission.get('position_action_cn')}",
             f"外围参考：{self.global_market.compact_line(global_snapshot)}",
+            *command_lines,
             "盘前价格作战图（D-1前复权；价位到达后仍须实时确认）：",
             *self._candidate_lines(),
             "使用：A=回踩收复优先，B=突破接受次之，C=观察不追；阻力位是减速/保护点，不是无条件卖点。均线只提供[-4,+4]排序修正，开盘后由市场许可、板块、资金行为、30/60分钟结构和成交性接管。",
@@ -2984,8 +2992,9 @@ class LiveSignalService:
                 ("池宽度", f"{daily.get('pool_breadth', 0):.1%}"),
                 ("市场许可", f"{permission.get('state_cn')} / {permission.get('new_entry_permission')}"),
                 ("外围温度", global_snapshot.get("state_cn", "未知")),
+                ("盘前指挥台", premarket_command_status),
             ],
-            footer="均线是低权重盘前先验｜盘中实时证据拥有主决策权｜外围不能单独触发买卖｜系统不下单",
+            footer="指挥台仅提供仓位上限和方向白名单｜个股信号与风控独立｜外围不能单独触发买卖｜系统不下单",
         )
         result = self.notifier.send_card(card, event_id, fallback_text=text)
         self._log("summaries", {"stage": "premarket", "event_id": event_id, "advice": advice, "feishu": result})

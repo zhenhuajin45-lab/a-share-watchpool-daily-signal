@@ -1,0 +1,12 @@
+{
+  "schema_version": "kaipanla_uia_calibration_v1",
+  "trade_date": null,
+  "window_title_regex": ".*开盘啦.*",
+  "pages": {
+    "market_emotion": {"calibrated": false, "fields": []},
+    "sector_rank": {"calibrated": false, "fields": []},
+    "interval_stats": {"calibrated": false, "fields": []},
+    "tomorrow_topics": {"calibrated": false, "fields": []}
+  },
+  "policy": "先保存原始 UIA JSON 和截图，再用同屏人工核对后的正则标定；未标定页面不得输出数字。"
+}

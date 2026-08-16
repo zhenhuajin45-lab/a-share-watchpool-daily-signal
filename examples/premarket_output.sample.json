@@ -1,0 +1,500 @@
+{
+  "schema_version": "a_share_premarket_command_v1",
+  "source_trade_date": "20260814",
+  "execution_trade_date": "20260817",
+  "generated_at": "2026-08-15T10:00:41+08:00",
+  "status": "READY_FOR_DEEPSEEK_REVIEW",
+  "release_status": "DRAFT_REVIEW_REQUIRED",
+  "market_emotion": {
+    "state": "DIVERGENT_WEAK",
+    "label": "分化偏弱",
+    "score": 49.9,
+    "base_position_cap_pct": 50,
+    "components": {
+      "kaipanla_composite_strength": 53.0,
+      "breadth_score": 44.69,
+      "limit_structure_score": 82.67,
+      "profit_effect_score": 37.25,
+      "volume_score": 25.97
+    },
+    "warnings": [
+      "下跌家数多于上涨家数，结构强势不能替代全市场广度。",
+      "全市场明显缩量，仓位不能仅按涨停数量上调。",
+      "昨日强势样本赚钱效应为负，接力环境偏弱。"
+    ]
+  },
+  "major_indices": [
+    {
+      "name": "上证指数",
+      "symbol": "SHSE.000001",
+      "status": "OK",
+      "trend": "MIXED",
+      "trend_label": "震荡分化",
+      "close": 3927.18,
+      "ma5": 3940.3,
+      "ma10": 3905.23,
+      "ma20": 3870.39,
+      "return_5d_pct": -0.33,
+      "return_20d_pct": 4.33,
+      "volume_ratio_5d": 0.92
+    },
+    {
+      "name": "深证成指",
+      "symbol": "SZSE.399001",
+      "status": "OK",
+      "trend": "BULLISH_ALIGNMENT",
+      "trend_label": "多头排列",
+      "close": 14354.31,
+      "return_5d_pct": 0.3,
+      "return_20d_pct": 4.72,
+      "volume_ratio_5d": 0.94
+    },
+    {
+      "name": "创业板指",
+      "symbol": "SZSE.399006",
+      "status": "OK",
+      "trend": "BULLISH_ALIGNMENT",
+      "trend_label": "多头排列",
+      "close": 3626.3,
+      "return_5d_pct": 1.77,
+      "return_20d_pct": 5.77,
+      "volume_ratio_5d": 0.94
+    },
+    {
+      "name": "科创50",
+      "symbol": "SHSE.000688",
+      "status": "OK",
+      "trend": "BELOW_MA20",
+      "trend_label": "趋势偏弱",
+      "close": 1717.68,
+      "return_5d_pct": -1.51,
+      "return_20d_pct": 0.13,
+      "volume_ratio_5d": 0.79
+    }
+  ],
+  "index_summary": {
+    "available_count": 4,
+    "weak_indices": [
+      "科创50"
+    ]
+  },
+  "author_long_short_ratio": {
+    "available": true,
+    "ratio": 1.69,
+    "source_trade_date": "20260814",
+    "previous_ratio": 2.88,
+    "previous_trade_date": "20260813",
+    "change": -1.19,
+    "change_pct": -41.32,
+    "consecutive_declines": 4,
+    "momentum": "FAST_COOLING",
+    "state": "UPPER_WATCH_ZONE",
+    "label": "1.5-2阶段顶部观察区",
+    "position_ceiling_pct": 65,
+    "thresholds": {
+      "bottom_watch": 0.3,
+      "negative_effect": 0.6,
+      "balance": 1.0,
+      "stage_top_watch_1": 1.5,
+      "stage_top_watch_2": 2.0
+    },
+    "observations": [
+      {
+        "trade_date": "20260804",
+        "ratio": 4.54,
+        "verification": "ARTICLE_IMAGE_VERIFIED",
+        "source_url": null
+      },
+      {
+        "trade_date": "20260805",
+        "ratio": 6.4,
+        "verification": "ARTICLE_IMAGE_VERIFIED",
+        "source_url": null
+      },
+      {
+        "trade_date": "20260811",
+        "ratio": 5.22,
+        "verification": "USER_CONFIRMED",
+        "source_url": null
+      },
+      {
+        "trade_date": "20260812",
+        "ratio": 4.2,
+        "verification": "USER_CONFIRMED",
+        "source_url": null
+      },
+      {
+        "trade_date": "20260813",
+        "ratio": 2.88,
+        "verification": "ARTICLE_IMAGE_VERIFIED",
+        "source_url": null
+      },
+      {
+        "trade_date": "20260814",
+        "ratio": 1.69,
+        "verification": "ARTICLE_IMAGE_VERIFIED",
+        "source_url": null
+      }
+    ],
+    "calibration_only": true,
+    "policy": "作者原值提供周期位置；不得与SWR求平均，复刻值未晋级前不得参与门控。"
+  },
+  "internal_swr": {
+    "status": "OK",
+    "metric_name": "SWR内部市场合力",
+    "ratio": 1.0197,
+    "market_tolerance_score": 50.5,
+    "state": "BALANCED",
+    "label": "多空均衡/结构性可做",
+    "position_range_pct": [
+      35,
+      60
+    ],
+    "confidence": 1.0,
+    "components": [
+      {
+        "name": "market_breadth",
+        "ratio": 0.8143,
+        "raw_ratio": 0.8143,
+        "weight": 0.22,
+        "bias": "SHORT",
+        "evidence": {
+          "rise_count": 2400,
+          "fall_count": 2970
+        }
+      },
+      {
+        "name": "limit_structure",
+        "ratio": 2.1292,
+        "raw_ratio": 2.1292,
+        "weight": 0.14,
+        "bias": "LONG",
+        "evidence": {
+          "limit_up_count": 63,
+          "limit_down_count": 10
+        }
+      },
+      {
+        "name": "profit_effect",
+        "ratio": 0.7533,
+        "raw_ratio": 0.7533,
+        "weight": 0.17,
+        "bias": "SHORT",
+        "evidence": {
+          "average_return_pct": -0.85,
+          "samples": [
+            -0.09,
+            -0.42,
+            -2.04
+          ]
+        }
+      },
+      {
+        "name": "turnover",
+        "ratio": 0.5269,
+        "raw_ratio": 0.5269,
+        "weight": 0.1,
+        "bias": "SHORT",
+        "evidence": {
+          "change_pct": -16.02
+        }
+      },
+      {
+        "name": "kaipanla_strength",
+        "ratio": 1.1814,
+        "raw_ratio": 1.1814,
+        "weight": 0.12,
+        "bias": "LONG",
+        "evidence": {
+          "composite_strength": 53.0
+        }
+      },
+      {
+        "name": "index_resonance",
+        "ratio": 1.1403,
+        "raw_ratio": 1.1403,
+        "weight": 0.13,
+        "bias": "LONG",
+        "evidence": {
+          "average_trend_score": 0.1875,
+          "trends": [
+            {
+              "name": "上证指数",
+              "trend": "MIXED"
+            },
+            {
+              "name": "深证成指",
+              "trend": "BULLISH_ALIGNMENT"
+            },
+            {
+              "name": "创业板指",
+              "trend": "BULLISH_ALIGNMENT"
+            },
+            {
+              "name": "科创50",
+              "trend": "BELOW_MA20"
+            }
+          ]
+        }
+      },
+      {
+        "name": "mainline_cycle",
+        "ratio": 1.3284,
+        "raw_ratio": 1.3284,
+        "weight": 0.12,
+        "bias": "LONG",
+        "evidence": {
+          "average_stage_score": 0.4057,
+          "top_sectors": [
+            {
+              "sector_name": "算力",
+              "stage": "ACCELERATION",
+              "rank": 1
+            },
+            {
+              "sector_name": "通信",
+              "stage": "ACCELERATION",
+              "rank": 3
+            },
+            {
+              "sector_name": "AI应用",
+              "stage": "STARTUP",
+              "rank": 12
+            },
+            {
+              "sector_name": "机器人概念",
+              "stage": "DIVERGENCE",
+              "rank": 5
+            },
+            {
+              "sector_name": "芯片",
+              "stage": "DIVERGENCE",
+              "rank": 2
+            }
+          ]
+        }
+      }
+    ],
+    "warnings": [
+      "全市场广度偏空，结构性主线不能等价为全面风险偏好。",
+      "强势股隔日反馈偏弱，追涨与接力需要降档。",
+      "量能负贡献，扩仓应等待缩量幅度收窄。"
+    ],
+    "conditional_expansion": {
+      "eligible": true,
+      "bonus_pct": 10,
+      "requirements": {
+        "min_full_market_up_ratio": 0.5,
+        "min_primary_sector_up_ratio": 0.6,
+        "min_turnover_change_pct": -8.0,
+        "require_primary_sector_above_vwap": true,
+        "max_external_shock_level": "MEDIUM"
+      }
+    }
+  },
+  "external_resonance": {
+    "status": "ok",
+    "source_quality": "verified_live",
+    "level": "LOW",
+    "score": 0.0,
+    "entry_policy": "normal",
+    "position_cap_pct": null,
+    "reasons": [
+      "no_external_tech_shock_evidence_default_pass"
+    ],
+    "markets": [
+      {
+        "name": "纳斯达克综合指数",
+        "pct": 0.81
+      },
+      {
+        "name": "费城半导体指数",
+        "pct": 0.46
+      },
+      {
+        "name": "韩国KOSPI",
+        "pct": 2.42
+      },
+      {
+        "name": "台湾加权指数",
+        "pct": -0.46
+      }
+    ]
+  },
+  "position_command": {
+    "base_cap_pct": 50,
+    "conditional_expansion_cap_pct": 60,
+    "conditional_expansion_enabled": true,
+    "expansion_requirements": {
+      "min_full_market_up_ratio": 0.5,
+      "min_primary_sector_up_ratio": 0.6,
+      "min_turnover_change_pct": -8.0,
+      "require_primary_sector_above_vwap": true,
+      "max_external_shock_level": "MEDIUM"
+    },
+    "decision_rule": "所有独立上限取最小值；条件扩张必须由开盘后确定性证据触发。"
+  },
+  "sector_rotation": {
+    "primary_attack_sectors": [
+      {
+        "sector_code": "801807",
+        "sector_name": "算力",
+        "stage": "ACCELERATION",
+        "cycle_day": 1,
+        "current_rank": 1,
+        "validation_state": "CONFIRMED",
+        "validation_score": 100,
+        "command_score": 100.0,
+        "current_main_net_yi": 58.47,
+        "interval_return_pct": 1.45,
+        "interval_net_yi": 67.34,
+        "net_inflow_days": 3,
+        "intraday_rhythm": "PERSISTENT",
+        "topic_confirmations": [],
+        "permission": "PRIMARY_ATTACK",
+        "discipline": "只确认方向与生命周期；具体策略仍需自身信号和执行门控。"
+      },
+      {
+        "sector_code": "801660",
+        "sector_name": "通信",
+        "stage": "ACCELERATION",
+        "cycle_day": 1,
+        "current_rank": 3,
+        "validation_state": "CONFIRMED",
+        "validation_score": 89,
+        "command_score": 99.9,
+        "current_main_net_yi": 166.7,
+        "interval_return_pct": 1.95,
+        "interval_net_yi": 23.25,
+        "net_inflow_days": 2,
+        "intraday_rhythm": "PERSISTENT",
+        "topic_confirmations": [],
+        "permission": "PRIMARY_ATTACK",
+        "discipline": "只确认方向与生命周期；具体策略仍需自身信号和执行门控。"
+      }
+    ],
+    "rotation_watch": [
+      {
+        "sector_code": "801807",
+        "sector_name": "算力",
+        "stage": "ACCELERATION",
+        "cycle_day": 1,
+        "current_rank": 1,
+        "validation_state": "CONFIRMED",
+        "validation_score": 100,
+        "command_score": 100.0,
+        "current_main_net_yi": 58.47,
+        "interval_return_pct": 1.45,
+        "interval_net_yi": 67.34,
+        "net_inflow_days": 3,
+        "intraday_rhythm": "PERSISTENT",
+        "topic_confirmations": [],
+        "permission": "PRIMARY_ATTACK",
+        "discipline": "只确认方向与生命周期；具体策略仍需自身信号和执行门控。"
+      },
+      {
+        "sector_code": "801660",
+        "sector_name": "通信",
+        "stage": "ACCELERATION",
+        "cycle_day": 1,
+        "current_rank": 3,
+        "validation_state": "CONFIRMED",
+        "validation_score": 89,
+        "command_score": 99.9,
+        "current_main_net_yi": 166.7,
+        "interval_return_pct": 1.95,
+        "interval_net_yi": 23.25,
+        "net_inflow_days": 2,
+        "intraday_rhythm": "PERSISTENT",
+        "topic_confirmations": [],
+        "permission": "PRIMARY_ATTACK",
+        "discipline": "只确认方向与生命周期；具体策略仍需自身信号和执行门控。"
+      },
+      {
+        "sector_code": "803023",
+        "sector_name": "AI应用",
+        "stage": "STARTUP",
+        "cycle_day": 1,
+        "current_rank": 12,
+        "validation_state": "WATCH",
+        "validation_score": 54,
+        "command_score": 54.5,
+        "current_main_net_yi": 3.26,
+        "interval_return_pct": 0.91,
+        "interval_net_yi": -16.83,
+        "net_inflow_days": 2,
+        "intraday_rhythm": "MIXED",
+        "topic_confirmations": [],
+        "permission": "RECONFIRM_ONLY",
+        "discipline": "只确认方向与生命周期；具体策略仍需自身信号和执行门控。"
+      },
+      {
+        "sector_code": "801159",
+        "sector_name": "机器人概念",
+        "stage": "DIVERGENCE",
+        "cycle_day": 1,
+        "current_rank": 5,
+        "validation_state": "WATCH",
+        "validation_score": 56,
+        "command_score": 23.2,
+        "current_main_net_yi": -5.79,
+        "interval_return_pct": 1.12,
+        "interval_net_yi": -10.95,
+        "net_inflow_days": 2,
+        "intraday_rhythm": "DISTRIBUTING",
+        "topic_confirmations": [],
+        "permission": "NO_NEW_ATTACK",
+        "discipline": "只确认方向与生命周期；具体策略仍需自身信号和执行门控。"
+      },
+      {
+        "sector_code": "801001",
+        "sector_name": "芯片",
+        "stage": "DIVERGENCE",
+        "cycle_day": 1,
+        "current_rank": 2,
+        "validation_state": "WATCH",
+        "validation_score": 48,
+        "command_score": 15.6,
+        "current_main_net_yi": -7.24,
+        "interval_return_pct": 2.32,
+        "interval_net_yi": -38.65,
+        "net_inflow_days": 2,
+        "intraday_rhythm": "DISTRIBUTING",
+        "topic_confirmations": [],
+        "permission": "NO_NEW_ATTACK",
+        "discipline": "只确认方向与生命周期；具体策略仍需自身信号和执行门控。"
+      }
+    ],
+    "risk_headlines": [],
+    "policy": "板块必须同时看生命周期、排名、强度、资金、区间持续性和题材证据，禁止仅凭涨跌幅定主线。"
+  },
+  "opening_change_triggers": [
+    "09:20重新抓取外围、指数期货/竞价、开盘啦情绪和板块排名，计算与盘前快照的差量。",
+    "任一主要指数由强转弱、外围冲击升至HIGH、主攻板块跌出前12或资金转负时收紧仓位。",
+    "任何数据源缺失只降低置信度并报警，不自动视为空头，也不能据此放宽门控。"
+  ],
+  "premarket_disciplines": [
+    "确定性计算先完成，DeepSeek只能复核、否决或收紧，不能提高仓位、补造数据或新增主攻板块。",
+    "作者多空比与内部SWR尺度不同，禁止求平均；作者复刻值未晋级前只做误差研究。",
+    "开盘啦与公众号是交叉证据，掘金SDK行情是指数和可复算市场事实的主数据源。",
+    "主攻板块只授权方向，不向任何具体策略自动授予个股买入权限。"
+  ],
+  "source_health": {
+    "required": {
+      "market_sentiment": true,
+      "major_indices": true,
+      "author_ratio": true,
+      "external_market": true,
+      "sector_cycle": true
+    },
+    "missing": []
+  },
+  "policy": {
+    "contains_stock_pool": false,
+    "deepseek_required_for_publish": true,
+    "deepseek_can_raise_position_cap": false,
+    "deepseek_can_add_attack_sector": false,
+    "missing_source_is_bearish": false,
+    "external_source_can_grant_stock_entry": false
+  }
+}
